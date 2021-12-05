@@ -1,26 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { TextField, Button } from "@material-ui/core";
+import ValidacoesCadastro from "../../contexts/ValidacoesCadastro";
+import useErros from "../../hooks/useErros";
 
-function DadosUsuario({ aoEnviar, validacoes }) {
+function DadosUsuario({ aoEnviar }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-
-  const [erros, setErros] = useState({ senha: { valido: true, texto: "" } });
-
-
-  function validarCampos(event){
-      const {name, value} = event.target;
-      const newState = {...erros};
-      newState[name] = validacoes[name](value);
-      setErros(newState);
-    
-  }
+  const validacoes = useContext(ValidacoesCadastro)
+  const [erros, validarCampos, possoEnviar] = useErros(validacoes);
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        aoEnviar({ email, senha });
+        if (possoEnviar()) {
+          aoEnviar({ email, senha });
+        }
       }}
     >
       <TextField
@@ -55,7 +50,7 @@ function DadosUsuario({ aoEnviar, validacoes }) {
         fullWidth
       />
       <Button type="submit" variant="contained" color="primary">
-        Cadastrar
+        Próximo
       </Button>
     </form>
   );
